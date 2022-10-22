@@ -326,10 +326,15 @@ public class InventoryInterface extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     public void SetPONumber(){
+        // Get today's Date
         SimpleDateFormat formatter = new SimpleDateFormat("ddMMyy");
         java.util.Date today =new java.util.Date();
+        
+        // Create automated PO number 
         int todayint = Integer.parseInt(formatter.format(today));
         poNumber = todayint*1000+1;
+        
+        // Create Automated input for JTextField1
         SimpleDateFormat formats = new SimpleDateFormat("dd/MM/yyyy");
         defaultDate = formats.format(today);
     }
@@ -344,18 +349,23 @@ public class InventoryInterface extends javax.swing.JFrame {
         Connection conn = null;
         ResultSet table = null;
         try {
+            // Set the Query
             String query =  "SELECT * FROM inv_table";
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/yummypizza","root","root");
             //Start Statement
             Statement st = conn.createStatement();
             //handle results 
             table  = st.executeQuery(query);
+            // Update table
             if (table !=null){
                 DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
                 String[] colName = new String[]{
                 "ID","Name","Quantity","UOM","Supplier"
                 };
                 model.setColumnIdentifiers(colName);
+                // Clean the Table before writing
+                model.setRowCount(0);
+                // Write the rows
                 while(table.next()){
                     int id = table.getInt("inv_id");
                     String name = table.getString("inv_name");
@@ -365,8 +375,9 @@ public class InventoryInterface extends javax.swing.JFrame {
                     Object[] row = {id,name,quant,EOM,supplier};
                     model.addRow(row);
                 }
-            st.close();
-            conn.close();
+                // Close statement and Connection
+                st.close();
+                conn.close();
             }else {
                 System.out.println("Can't Connect to DB Please check again");
             }
@@ -385,16 +396,19 @@ public class InventoryInterface extends javax.swing.JFrame {
         Connection conn = null;
         ResultSet table = null;
         try {
+            // Get the value from Combobox
             String selected = (String) jComboBox1.getSelectedItem();
-            //System.out.println(selected);
+            // Set the Query
             String query =  "SELECT * FROM inv_table where sup_name = '"+selected+"';";
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/yummypizza","root","root");
             //Start Statement
             Statement st = conn.createStatement();
             //handle results 
             table  = st.executeQuery(query);
+            // Update the table
             if (table !=null){
                 DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+                // Clean the table before rewrites
                 model.setRowCount(0);
                 String[] colName = new String[]{
                 "ID","Name","Available","Order","UOM"
@@ -410,8 +424,9 @@ public class InventoryInterface extends javax.swing.JFrame {
                     Object[] row = {id,name,quant,order,EOM};
                     model.addRow(row);
                 }
-            st.close();
-            conn.close();
+                //Close statement and connection
+                st.close();
+                conn.close();
             }else {
                 System.out.println("Can't Connect to DB Please check again");
             }
@@ -429,6 +444,7 @@ public class InventoryInterface extends javax.swing.JFrame {
         Connection conn = null;
         ResultSet table = null;
         try {
+            // Setup Query
             String query =  "SELECT * FROM po_view";
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/yummypizza","root","root");
             //Start Statement
@@ -436,6 +452,8 @@ public class InventoryInterface extends javax.swing.JFrame {
             //handle results 
             table  = st.executeQuery(query);
             DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+            // Clean the table before rewrites
+            model.setRowCount(0);
             String[] colName = new String[]{
                 "PO_ID","Supplier","Date Submitted","Status"
             };
@@ -448,6 +466,7 @@ public class InventoryInterface extends javax.swing.JFrame {
                 Object[] row = {id,name,orddate,stat};
                 model.addRow(row);
             }
+            // Close statement and Connection
             st.close();
             conn.close();
             
@@ -473,7 +492,7 @@ public class InventoryInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jTabbedPane1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane1StateChanged
-        // TODO add your handling code here:
+        // Refresh all Tables
         RefreshInvTable();
         RefreshPOViewTable();
         RefreshPOStatusTable();
@@ -481,12 +500,12 @@ public class InventoryInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_jTabbedPane1StateChanged
 
     private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
-        // TODO add your handling code here:
+        // Refresh PO View Table
         RefreshPOViewTable();
     }//GEN-LAST:event_jComboBox1ItemStateChanged
 
     private void jTable2FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTable2FocusGained
-        // TODO add your handling code here:
+        // Updathe value of selectedID
         selectedID = String.valueOf(jTable2.getValueAt(jTable2.getSelectedRow(),0));
     }//GEN-LAST:event_jTable2FocusGained
 
